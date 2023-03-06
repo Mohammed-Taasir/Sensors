@@ -17,7 +17,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private TextView textView;
     private SensorManager sensorManager;
-    private float changedValue;
+    private Sensor tempSensor;
+    private boolean hasTempSensor;
 
 
     @SuppressLint("MissingInflatedId")
@@ -29,12 +30,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null){
+            tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            hasTempSensor = true;
+        }else{
+            textView.setText("Tempreture sensor aint here");
+            hasTempSensor = false;
+        }
+
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        changedValue = sensorEvent.values[0];
-        textView.setText(String.valueOf(changedValue));
+        textView.setText(sensorEvent.values[0]+" ºC");
     }
 
     @Override
@@ -45,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
