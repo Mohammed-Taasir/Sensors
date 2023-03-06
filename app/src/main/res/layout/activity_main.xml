@@ -11,11 +11,19 @@
         android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:text="Hello World!"
+        android:textSize="100sp" />
+
     <TextView
         android:id="@+id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_gravity="center"
+        android:layout_marginTop="60dp"
+        android:text="This app detects light magnitude"
+        android:textSize="20sp" />
+
 
 </LinearLayout>
