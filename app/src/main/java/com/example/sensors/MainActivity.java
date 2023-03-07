@@ -8,20 +8,22 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.widget.TextView;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     private TextView textView;
     private SensorManager sensorManager;
-    private Sensor tempSensor;
-    private boolean hasTempSensor;
+    private Sensor proxSensor;
+    private boolean hasProxSensor;
+    private Vibrator vibrator;
 
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint({"MissingInflatedId", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,20 +31,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         textView = findViewById(R.id.text);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-        if(sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null){
-            tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-            hasTempSensor = true;
+        if(sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null){
+            proxSensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+            hasProxSensor = true;
         }else{
-            textView.setText("Tempreture sensor aint here");
-            hasTempSensor = false;
+            textView.setText("Proximity sensor aint here");
+            hasProxSensor = false;
         }
 
     }
 
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        textView.setText(sensorEvent.values[0]+" ºC");
+        textView.setText(sensorEvent.values[0]+" cm");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(500, VibrationEffect.DEFAULT_AMPLITUDE));
+        }else{
+            vibrator.vibrate(500);      // this shit is depecrated after api 26
+        }
     }
 
     @Override
@@ -53,12 +61,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onResume() {
         super.onResume();
-        if(hasTempSensor) sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        if(hasProxSensor) sensorManager.registerListener(this, proxSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if(hasTempSensor) sensorManager.unregisterListener(this);
+        if(hasProxSensor) sensorManager.unregisterListener(this);
     }
 }
